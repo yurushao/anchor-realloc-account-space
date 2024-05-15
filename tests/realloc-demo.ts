@@ -20,37 +20,11 @@ describe("realloc-demo", () => {
   console.log("dataPda", dataPda.toBase58());
 
   it("Is initialized!", async () => {
-    // Add your test here.
     const tx = await program.methods
       .initialize()
       .accounts({ data: dataPda, signer: wallet.publicKey })
       .rpc();
     console.log("Your transaction signature", tx);
-  });
-
-  it("Add data with realloc", async () => {
-    try {
-      await program.methods
-        .addWithRealloc(50, dataPda)
-        .accounts({
-          data: dataPda,
-          signer: wallet.publicKey,
-          rent: SYSVAR_RENT_PUBKEY,
-        })
-        .rpc();
-
-      await program.methods
-        .add(dataPda)
-        .accounts({
-          data: dataPda,
-          signer: wallet.publicKey,
-          rent: SYSVAR_RENT_PUBKEY,
-        })
-        .rpc();
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
   });
 
   it("Add data", async () => {
@@ -79,8 +53,8 @@ describe("realloc-demo", () => {
 
     const { list } = await program.account.data.fetch(dataPda);
     console.log("list", list);
-    assert.equal(list.length, 4);
-    assert.equal(list[2].toBase58(), dataPda.toBase58());
-    assert.equal(list[3].toBase58(), wallet.publicKey.toBase58());
+    assert.equal(list.length, 2);
+    assert.equal(list[0].toBase58(), dataPda.toBase58());
+    assert.equal(list[1].toBase58(), wallet.publicKey.toBase58());
   });
 });

@@ -30,7 +30,7 @@ mod realloc_demo {
         msg!("space left: {}", space_left);
 
         if space_left < 32 {
-            let needed_len = curr_data_size + 100 * 32;
+            let needed_len = curr_data_size + 10 * 32;
             AccountInfo::realloc(&data_account_info, needed_len, false)?;
 
             // if more lamports are needed, transfer them to the account
@@ -63,19 +63,6 @@ mod realloc_demo {
 
         return Ok(());
     }
-    
-    pub fn add_with_realloc(ctx: Context<AddWithRealloc>, len: u16, entry: Pubkey) -> Result<()> {
-        ctx.accounts.data.list.push(entry);
-        return Ok(());
-    }
-
-    pub fn list(ctx: Context<List>) -> Result<()> {
-        for i in ctx.accounts.data.list.iter() {
-            msg!("entry: {}", i)
-        }
-
-        return Ok(());
-    }
 }
 
 #[derive(Accounts)]
@@ -87,22 +74,6 @@ pub struct List<'info> {
 #[derive(Accounts)]
 pub struct Add<'info> {
     #[account(mut)]
-    pub data: Account<'info, Data>,
-
-    #[account(mut)]
-    pub signer: Signer<'info>,
-    pub rent: Sysvar<'info, Rent>,
-    pub system_program: Program<'info, System>,
-}
-
-#[derive(Accounts)]
-#[instruction(len: u16)]
-pub struct AddWithRealloc<'info> {
-    #[account(mut, 
-        realloc = len as usize, 
-        realloc::zero = true, 
-        realloc::payer = signer
-    )]
     pub data: Account<'info, Data>,
 
     #[account(mut)]
